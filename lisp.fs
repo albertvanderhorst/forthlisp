@@ -1,11 +1,11 @@
-\ $Id: lisp.fs,v $
+\ $Id: lisp.frt,v 1.2 2018/01/28 19:34:07 albert Exp $
 \ Copyright (C) 1999 Mark Probst
 \ Ansification (2018): Albert van der Horst
 \ Copyright by GPL: quality by no warranty.
+\ See the obligatory blurb at the end.
 
-\ lisp.fs
-\
 \ A Lisp interpreter in Forth
+
 \ utilities
  0 CONSTANT struct  \ initial offset
 
@@ -20,8 +20,9 @@
 ( size -- addr ior )
  : %allocate allocate ;
 
-
-: string-new { a u -- a u }
+0 VALUE u
+0 VALUE a
+: string-new  TO u  TO a
     a u allocate drop dup >r u cmove
     r> u ;
 
@@ -43,7 +44,9 @@ end-struct symtab
 0 variable symtab-first
 drop
 
-: symtab-lookup { namea nameu -- }
+0 VALUE nameu
+0 VALUE namea
+: symtab-lookup  TO nameu  TO namea
     symtab-first @
     begin
         dup 0<>
@@ -57,7 +60,10 @@ drop
     repeat
     drop 0 ;
 
-: symtab-add { namea nameu lisp -- }
+0 VALUE lisp
+0 VALUE nameu
+0 VALUE namea
+: symtab-add  TO lisp  TO nameu  TO namea
     symtab %allocate throw
     dup symtab-namea namea swap !
     dup symtab-nameu nameu swap !
@@ -122,7 +128,9 @@ struct
     cell% field compound-body
 end-struct lisp-compound
 
-: cons { car cdr -- lisp }
+0 VALUE cdr
+0 VALUE car
+: cons  TO cdr  TO car
     lisp-pair %allocate throw
     dup pair-tag lisp-pair-tag swap !
     dup pair-car car swap !
@@ -134,17 +142,21 @@ end-struct lisp-compound
 : cdr ( pair -- lisp )
     pair-cdr @ ;
 
-: number { num -- lisp }
+0 VALUE num
+: number  TO num
     lisp-number %allocate throw
     dup number-tag lisp-number-tag swap !
     dup number-num num swap ! ;
 
-: builtin { xt -- lisp }
+0 VALUE xt
+: builtin  TO xt
     lisp-builtin %allocate throw
     dup builtin-tag lisp-builtin-tag swap !
     dup builtin-xt xt swap ! ;
 
-: symbol { namea nameu -- lisp }
+0 VALUE nameu
+0 VALUE namea
+: symbol  TO nameu  TO namea
     lisp-symbol %allocate throw
     dup symbol-tag lisp-symbol-tag swap !
     dup symbol-namea namea swap !
@@ -153,12 +165,15 @@ end-struct lisp-compound
 : symbol-new ( namea nameu -- lisp )
     string-new symbol ;
 
-: special { xt -- lisp }
+0 VALUE xt
+: special  TO xt
     lisp-special %allocate throw
     dup special-tag lisp-special-tag swap !
     dup special-xt xt swap ! ;
 
-: compound { args body -- lisp }
+0 VALUE body
+0 VALUE args
+: compound  TO body  TO args
     lisp-compound %allocate throw
     dup compound-tag lisp-compound-tag swap !
     dup compound-args args swap !
@@ -193,7 +208,8 @@ end-struct lisp-compound
 
 ' lisp-display-builtin display-dispatch lisp-builtin-tag cells + !
 
-: lisp-display-symbol { lisp -- }
+0 VALUE lisp
+: lisp-display-symbol  TO lisp
     lisp symbol-namea @ lisp symbol-nameu @ type ;
 
 ' lisp-display-symbol display-dispatch lisp-symbol-tag cells + !
@@ -263,7 +279,8 @@ end-struct lisp-compound
 
 ' lisp-eval-builtin eval-dispatch lisp-builtin-tag cells + !
 
-: lisp-eval-symbol { lisp -- lisp }
+0 VALUE lisp
+: lisp-eval-symbol  TO lisp
     lisp symbol-namea @ lisp symbol-nameu @ symtab-lookup ;
 
 ' lisp-eval-symbol eval-dispatch lisp-symbol-tag cells + !
@@ -488,7 +505,9 @@ s" eq?" string-new ' lisp-builtin-eq? builtin symtab-add
 
 ' lisp-false eq?-dispatch lisp-builtin-tag cells + !
 
-: lisp-eq?-symbol { lisp1 lisp2 -- lisp }
+0 VALUE lisp2
+0 VALUE lisp1
+: lisp-eq?-symbol  TO lisp2  TO lisp1
     lisp1 symbol-namea @ lisp1 symbol-nameu @
     lisp2 symbol-namea @ lisp2 symbol-nameu @
     compare 0= if
@@ -505,3 +524,18 @@ s" eq?" string-new ' lisp-builtin-eq? builtin symtab-add
     car lisp-display 0 ;
 
 s" display" string-new ' lisp-builtin-display builtin symtab-add
+
+\ Obligatory GPL blurb:
+\ This program is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public License
+\ as published by the Free Software Foundation; either version 2
+\ of the License, or (at your option) any later version.
+\
+\ This program is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+\ GNU General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public License
+\ along with this program; if not, write to the Free Software
+\ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
