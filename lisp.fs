@@ -6,19 +6,7 @@
 
 \ A Lisp interpreter in Forth
 
-\ utilities
- 0 CONSTANT struct  \ initial offset
-
-: end-struct  CONSTANT ;  \ leaves size of struct
-
-\ Create field  "name"  with  offset  size  . Leave new  offset  .
-\ name execution: turn  struct   into a  field
-: field   create over , +   does> @ + ;
-
-1 CELLS CONSTANT cell%
-
-( size -- addr ior )
- : %allocate allocate ;
+INCLUDE struct.fs
 
 0 VALUE u
 0 VALUE a
@@ -35,8 +23,8 @@
 \ symbol table
 
 struct
-    cell% field symtab-namea
-    cell% field symtab-nameu
+    0 field symtab-name! 2!
+    2 cells field symtab-name 2@
     cell% field symtab-lisp
     cell% field symtab-next
 end-struct symtab
@@ -44,29 +32,25 @@ end-struct symtab
 0 variable symtab-first
 drop
 
-0 VALUE nameu
-0 VALUE namea
-: symtab-lookup  TO nameu  TO namea
+: symtab-lookup
     symtab-first @
     begin
         dup 0<>
     while
         >r
-        r@ symtab-namea @ r@ symtab-nameu @ namea nameu compare
+        2dup r@ symtab-name compare
         0= if
-            r> symtab-lisp @ unloop exit
+           2DROP r> symtab-lisp @ exit
         endif
         r> symtab-next @
     repeat
-    drop 0 ;
-
+    drop 2DROP 0 ;
 0 VALUE lisp
 0 VALUE nameu
 0 VALUE namea
 : symtab-add  TO lisp  TO nameu  TO namea
     symtab %allocate throw
-    dup symtab-namea namea swap !
-    dup symtab-nameu nameu swap !
+    dup >R namea nameu R> symtab-name!
     dup symtab-lisp lisp swap !
     dup symtab-next symtab-first @ swap !
     symtab-first ! ;
@@ -113,8 +97,8 @@ end-struct lisp-builtin
 
 struct
     cell% field symbol-tag
-    cell% field symbol-namea
-    cell% field symbol-nameu
+    0       field symbol-name! 2!
+    2 CELLS field symbol-name 2@
 end-struct lisp-symbol
 
 struct
@@ -159,8 +143,7 @@ end-struct lisp-compound
 : symbol  TO nameu  TO namea
     lisp-symbol %allocate throw
     dup symbol-tag lisp-symbol-tag swap !
-    dup symbol-namea namea swap !
-    dup symbol-nameu nameu swap ! ;
+    dup >R namea nameu R> symbol-name! ;
 
 : symbol-new ( namea nameu -- lisp )
     string-new symbol ;
@@ -210,7 +193,7 @@ end-struct lisp-compound
 
 0 VALUE lisp
 : lisp-display-symbol  TO lisp
-    lisp symbol-namea @ lisp symbol-nameu @ type ;
+    lisp symbol-name type ;
 
 ' lisp-display-symbol display-dispatch lisp-symbol-tag cells + !
 
@@ -235,7 +218,7 @@ end-struct lisp-compound
     endif ;
 
 : lisp-bind-var ( name value -- )
-    >r dup symbol-namea @ swap symbol-nameu @ r> symtab-add ;
+    >r symbol-name  r> symtab-add ;
 
 : lisp-bind-vars ( names values -- )
     swap
@@ -281,7 +264,7 @@ end-struct lisp-compound
 
 0 VALUE lisp
 : lisp-eval-symbol  TO lisp
-    lisp symbol-namea @ lisp symbol-nameu @ symtab-lookup ;
+    lisp symbol-name symtab-lookup ;
 
 ' lisp-eval-symbol eval-dispatch lisp-symbol-tag cells + !
 
@@ -508,8 +491,7 @@ s" eq?" string-new ' lisp-builtin-eq? builtin symtab-add
 0 VALUE lisp2
 0 VALUE lisp1
 : lisp-eq?-symbol  TO lisp2  TO lisp1
-    lisp1 symbol-namea @ lisp1 symbol-nameu @
-    lisp2 symbol-namea @ lisp2 symbol-nameu @
+    lisp1 symbol-name  lisp2 symbol-name
     compare 0= if
         lisp-true
     else
