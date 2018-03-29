@@ -20,6 +20,13 @@ INCLUDE struct.fs
     loop
     nip ;
 
+\ All recursive and mutually recursive words are handled by DEFER.
+\ A word starting with _ is probably recursive
+defer lisp-read-lisp
+defer lisp-special-cond
+defer lisp-read-list
+defer lisp-eval-list
+
 \ symbol table
 
 struct
@@ -212,10 +219,11 @@ end-struct lisp-compound
         dup lisp-tag @ cells eval-dispatch + @ execute
     endif ;
 
-: lisp-eval-list recursive ( lisp -- lisp )
+: _lisp-eval-list ( lisp -- lisp )
     dup 0<> if
         dup car lisp-eval swap cdr lisp-eval-list cons
     endif ;
+' _lisp-eval-list IS lisp-eval-list
 
 : lisp-bind-var ( name value -- )
     >r symbol-name  r> symtab-add ;
@@ -318,15 +326,15 @@ end-struct lisp-compound
     endif
     token-buffer r> ;
 
-defer lisp-read-lisp
 
-: lisp-read-list recursive ( e a -- e a lisp )
+: _lisp-read-list ( e a -- e a lisp )
     lisp-skip-ws lisp-read-char
     dup [char] ) = swap 0 = or if
         0
     else
         lisp-unread-char lisp-read-lisp >r lisp-read-list r> swap cons
     endif ;
+' _lisp-read-list is lisp-read-list
 
 : lisp-read-number ( e a -- e a lisp )
     lisp-read-token string>num number ;
@@ -398,7 +406,7 @@ s" define" string-new ' lisp-special-define special symtab-add
 
 s" t" string-new lisp-true symtab-add
 
-: lisp-special-cond recursive ( lisp -- lisp )
+: _lisp-special-cond ( lisp -- lisp )
     dup car car lisp-eval 0<> if
         car cdr car lisp-eval
     else
@@ -406,6 +414,7 @@ s" t" string-new lisp-true symtab-add
             lisp-special-cond
         endif
     endif ;
+' _lisp-special-cond  is lisp-special-cond
 
 s" cond" string-new ' lisp-special-cond special symtab-add
 

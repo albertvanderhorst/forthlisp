@@ -7,8 +7,6 @@ VARIABLE offset
 
 : struct   0 offset ! ;
 
-: end-struct  offset @ CONSTANT ;  \ leaves size of struct
-
 : rema ^J PARSE ;
 
 \ Create field  "name"  with  offset  size  . Leave new  offset  .
