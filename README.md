@@ -1,3 +1,4 @@
+# Original preface
 # Lisp in Forth
 
 This is an interpreter for a really simple dynamically scoped Scheme
@@ -8,6 +9,11 @@ involved parts of this interpreter is the reader, where I had to do
 quite a lot of stack juggling to keep everything in line. It doesn't
 look very involved now but I remember spending quite some time
 thinking about the stack layout for the reader routines.
+
+# Remark AH
+
+The struct's needed are pretty simple and are separated out
+in a a file that will be understood by most Forth's. 
 
 ## How to use it
 
@@ -34,3 +40,7 @@ Example:
 
 In this example, `4` and `120` are printed in `test.scm`, and `()` is
 the result of the evaluation of the file.
+
+# Remark AH
+You can compile lisp.fs from most ISO-compliant Forth's.
+Using easy.fs will save you a lot of key strokes in using the three words above.
