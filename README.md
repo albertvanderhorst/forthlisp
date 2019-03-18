@@ -45,12 +45,13 @@ the result of the evaluation of the file.
 You can compile lisp.fs from most ISO-compliant Forth's.
 Using easy.fs will save you a lot of key strokes in using the three words above.
 The examples above become
-ev (+1 2 3) OK
-\ stack now contains a lisp object
-.l 
-=> 6 OK
-inc test.scm
-=> 4 120 OK
-\ The stack now contains the empty list, c.q. false.
-.l
-=> () OK
+
+	ev (+1 2 3) OK
+	\ stack now contains a lisp object
+	.l 
+	=> 6 OK
+	inc test.scm
+	=> 4 120 OK
+	\ The stack now contains the empty list, c.q. false.
+	.l
+	=> () OK
