@@ -1,3 +1,10 @@
+#ADVANCED
+
+This is reworked version of Schani lisp with use of objects.
+It only works with lina 32/64 bit, the version is not critical.
+Remarkable is also the use of the parser, the interpreter of strings is 
+left to the original quit loop, with the use of prefixes and delimiters.
+
 # Original preface
 # Lisp in Forth
 
