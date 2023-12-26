@@ -60,17 +60,12 @@ REGRESS 0 delimiters ! S:
 \ And off again.
 : lisp-off 0 delimiters ! ;
 
-\ Return the   address  just past the parse area.
-: EOP   SRC CELL+ @ ;
-
 \ A name now starts with the next non-blank, but ends on a blank
 \ or delimiter. Leaves  name  (a string constant).
 : TOKEN
-       _ BEGIN DROP PP@@
-	     OVER EOP = IF DROP 0 EXIT THEN
-	    ?BLANK NOT UNTIL          ( -- start)
-      _ BEGIN DROP PP@@ DUP ?BLANK SWAP ?START OR UNTIL  ( -- start end )
-      DUP PP !    OVER - ;
+   _ BEGIN DROP PP@@ ?BLANK OVER SRC CELL+ @ - AND 0= UNTIL ( -- start)
+   _ _ BEGIN 2DROP PP@@ DUP ?BLANK OVER ?START OR UNTIL ( -- s e del)
+   ?START PP +!    OVER - ;
 
 'TOKEN 'NAME  2 CELLS MOVE
 

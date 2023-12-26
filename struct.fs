@@ -2,21 +2,17 @@
 
 \ structs with active fields, in fact objects.
 
-10 CONSTANT ^J
 VARIABLE offset
 
 : struct   0 offset ! ;
 
-: rema ^J PARSE ;
-
 \ Create field  "name"  with  offset  size  . Leave new  offset  .
 \ name execution: turn  struct   into a  field
-: field   :  offset @ POSTPONE literal POSTPONE + rema EVALUATE
+: field   :  offset @ POSTPONE literal POSTPONE +
    POSTPONE ;  offset +! ;
 
 : end-struct  offset @ CONSTANT ;  \ leaves size of struct
 
-1 CELLS CONSTANT cell%
+: ENDIF POSTPONE THEN ; IMMEDIATE
 
-( size -- addr ior )
- : %allocate allocate ;
+1 CELLS CONSTANT cell

@@ -30,10 +30,9 @@ defer lisp-eval-list
 \ symbol table
 
 struct
-    0 field symtab-name! 2!
-    2 cells field symtab-name 2@
-    cell% field symtab-lisp
-    cell% field symtab-next
+    2 cells field symtab-name
+    cell field symtab-lisp
+    cell field symtab-next
 end-struct symtab
 
 0 variable symtab-first
@@ -45,7 +44,7 @@ drop
         dup 0<>
     while
         >r
-        2dup r@ symtab-name compare
+        2dup r@ symtab-name 2@ compare
         0= if
            2DROP r> symtab-lisp @ exit
         endif
@@ -56,8 +55,8 @@ drop
 0 VALUE nameu
 0 VALUE namea
 : symtab-add  TO lisp  TO nameu  TO namea
-    symtab %allocate throw
-    dup >R namea nameu R> symtab-name!
+    symtab allocate throw
+    dup >R namea nameu R> symtab-name 2!
     dup symtab-lisp lisp swap !
     dup symtab-next symtab-first @ swap !
     symtab-first ! ;
@@ -83,46 +82,45 @@ lisp-max-tag cells allocate throw constant display-dispatch
 lisp-max-tag cells allocate throw constant eq?-dispatch
 
 struct
-    cell% field lisp-tag
+    cell field lisp-tag
 end-struct lisp
 
 struct
-    cell% field pair-tag
-    cell% field pair-car
-    cell% field pair-cdr
+    cell field pair-tag
+    cell field pair-car
+    cell field pair-cdr
 end-struct lisp-pair
 
 struct
-    cell% field number-tag
-    cell% field number-num
+    cell field number-tag
+    cell field number-num
 end-struct lisp-number
 
 struct
-    cell% field builtin-tag
-    cell% field builtin-xt
+    cell field builtin-tag
+    cell field builtin-xt
 end-struct lisp-builtin
 
 struct
-    cell% field symbol-tag
-    0       field symbol-name! 2!
-    2 CELLS field symbol-name 2@
+    cell field symbol-tag
+    2 CELLS field symbol-name
 end-struct lisp-symbol
 
 struct
-    cell% field special-tag
-    cell% field special-xt
+    cell field special-tag
+    cell field special-xt
 end-struct lisp-special
 
 struct
-    cell% field compound-tag
-    cell% field compound-args
-    cell% field compound-body
+    cell field compound-tag
+    cell field compound-args
+    cell field compound-body
 end-struct lisp-compound
 
 0 VALUE cdr
 0 VALUE car
 : cons  TO cdr  TO car
-    lisp-pair %allocate throw
+    lisp-pair allocate throw
     dup pair-tag lisp-pair-tag swap !
     dup pair-car car swap !
     dup pair-cdr cdr swap ! ;
@@ -135,36 +133,36 @@ end-struct lisp-compound
 
 0 VALUE num
 : number  TO num
-    lisp-number %allocate throw
+    lisp-number allocate throw
     dup number-tag lisp-number-tag swap !
     dup number-num num swap ! ;
 
 0 VALUE xt
 : builtin  TO xt
-    lisp-builtin %allocate throw
+    lisp-builtin allocate throw
     dup builtin-tag lisp-builtin-tag swap !
     dup builtin-xt xt swap ! ;
 
 0 VALUE nameu
 0 VALUE namea
 : symbol  TO nameu  TO namea
-    lisp-symbol %allocate throw
+    lisp-symbol allocate throw
     dup symbol-tag lisp-symbol-tag swap !
-    dup >R namea nameu R> symbol-name! ;
+    dup >R namea nameu R> symbol-name 2! ;
 
 : symbol-new ( namea nameu -- lisp )
     string-new symbol ;
 
 0 VALUE xt
 : special  TO xt
-    lisp-special %allocate throw
+    lisp-special allocate throw
     dup special-tag lisp-special-tag swap !
     dup special-xt xt swap ! ;
 
 0 VALUE body
 0 VALUE args
 : compound  TO body  TO args
-    lisp-compound %allocate throw
+    lisp-compound allocate throw
     dup compound-tag lisp-compound-tag swap !
     dup compound-args args swap !
     dup compound-body body swap ! ;
@@ -200,7 +198,7 @@ end-struct lisp-compound
 
 0 VALUE lisp
 : lisp-display-symbol  TO lisp
-    lisp symbol-name type ;
+    lisp symbol-name 2@ type ;
 
 ' lisp-display-symbol display-dispatch lisp-symbol-tag cells + !
 
@@ -226,7 +224,7 @@ end-struct lisp-compound
 ' _lisp-eval-list IS lisp-eval-list
 
 : lisp-bind-var ( name value -- )
-    >r symbol-name  r> symtab-add ;
+    >r symbol-name 2@  r> symtab-add ;
 
 : lisp-bind-vars ( names values -- )
     swap
@@ -272,7 +270,7 @@ end-struct lisp-compound
 
 0 VALUE lisp
 : lisp-eval-symbol  TO lisp
-    lisp symbol-name symtab-lookup ;
+    lisp symbol-name 2@ symtab-lookup ;
 
 ' lisp-eval-symbol eval-dispatch lisp-symbol-tag cells + !
 
@@ -500,7 +498,7 @@ s" eq?" string-new ' lisp-builtin-eq? builtin symtab-add
 0 VALUE lisp2
 0 VALUE lisp1
 : lisp-eq?-symbol  TO lisp2  TO lisp1
-    lisp1 symbol-name  lisp2 symbol-name
+    lisp1 symbol-name 2@  lisp2 symbol-name 2@
     compare 0= if
         lisp-true
     else

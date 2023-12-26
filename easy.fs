@@ -6,6 +6,6 @@
 : .symtab
     symtab-first @
     BEGIN DUP WHILE
-        DUP symtab-name TYPE  CR
+        DUP symtab-name 2@ TYPE  CR
         symtab-next @
     REPEAT ;

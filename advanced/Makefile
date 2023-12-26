@@ -1,8 +1,6 @@
 # $Id: Makefile,v 1.14 2023/06/01 14:53:34 albert Exp $
 # Copyright (2023): Albert van der Horst {by GNU Public License}
 
-# The source lisp.frt is supposed to run on lina and gforth
-# Here is the wrapper for lina.
 FORTH=lina
 
 SRC= \

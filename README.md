@@ -1,12 +1,5 @@
-#ADVANCED
-
-This is reworked version of Schani lisp with use of objects.
-It only works with lina 32/64 bit, the version is not critical.
-Remarkable is also the use of the parser, the interpreter of strings is 
-left to the original quit loop, with the use of prefixes and delimiters.
-
-# Original preface
 # Lisp in Forth
+# Original preface by Mark Probst
 
 This is an interpreter for a really simple dynamically scoped Scheme
 dialect. It only runs with
@@ -16,11 +9,6 @@ involved parts of this interpreter is the reader, where I had to do
 quite a lot of stack juggling to keep everything in line. It doesn't
 look very involved now but I remember spending quite some time
 thinking about the stack layout for the reader routines.
-
-# Remark AH
-
-The struct's needed are pretty simple and are separated out
-in a a file that will be understood by most Forth's. 
 
 ## How to use it
 
@@ -40,25 +28,68 @@ There are mainly three words of interest:
 Example:
 
     s" (+ 1 2 3)" lisp-load-from-string lisp-display
-	=> 6 ok
+        => 6 ok
 
     s" test.scm" lisp-load-from-file lisp-display
-	=> 4 120 () ok
+        => 4 120 () ok
 
 In this example, `4` and `120` are printed in `test.scm`, and `()` is
 the result of the evaluation of the file.
 
+# DEFECT
+There was a defect removed in name look up, a spurious `UNLOOP`
+that crashed any Forth except gforth.
+
 # Remark AH
-You can compile lisp.fs from most ISO-compliant Forth's.
-Using easy.fs will save you a lot of key strokes in using the three words above.
+
+In struct.fs I have made the structs more portable and removed
+more portability issues.
+- The struct's needed are pretty simple and are defined and
+understood by most Forth's.
+- I replaced all `LOCAL` with `VALUE` (outside the definition).
+- I defined the word `ENDIF`
+- I also removed the word `%allocate`. Either the Forth knows
+`allocate` or it isn't. Renaming is silly.
+- the words `CELL` is well established (no `%cell`).
+Now you can compile lisp.fs from most ISO-compliant Forth's,
+as long as they are case-insensitive, or are put into that mode.
+
+The bottomline is that it now runs on pforth, SwiftForth,
+and mpeforth, and of course gforth.
+For lina/wina and other version of ciforth you must include
+`preambule.frt` first.
+
+# Remark AH
+Using `easy.fs` will save you a lot of key strokes in using the three words above.
 The examples above become
 
-	ev (+1 2 3) OK
-	\ stack now contains a lisp object
-	.l 
-	=> 6 OK
-	inc test.scm
-	=> 4 120 OK
-	\ The stack now contains the empty list, c.q. false.
-	.l
-	=> () OK
+        ev (+1 2 3) OK
+        \ stack now contains a lisp object
+        .l
+        => 6 OK
+        inc test.scm
+        => 4 120 OK
+        \ The stack now contains the empty list, c.q. false.
+        .l
+        => () OK
+
+I added a function similar to VLIST/WORDS
+        .symtab
+        ==> eq? cdr car ..
+
+# Remark AH
+Even the simple example in `coins.scm` cannot be run by this lisp.
+In scheme this calculates the number of ways to change one dollar.
+
+        scheme -load coins.scm
+
+#ADVANCED
+
+The `advanced` subdirectory contains a version that relies on
+    - classes/ objects
+    - anonymous functions
+    - parsing lisp directly
+It workes on all versions of ciforth lina/wina 32/64 .
+
+This foregoes the need for any values, locals and variables, except one,
+(the ancre for the linked list `env`).
