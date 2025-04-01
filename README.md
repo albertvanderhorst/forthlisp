@@ -61,6 +61,9 @@ For lina/wina and other version of ciforth you must include
 
 # Remark AH
 Using `easy.fs` will save you a lot of key strokes in using the three words above.
+
+I added .l "dot L", not .1 
+
 The examples above become
 
         ev (+1 2 3) OK
