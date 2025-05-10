@@ -59,17 +59,18 @@ In ciforth parsing is done by `PARSE-NAME` :
 - parse until the parsepointer sits at a blank
 - the two pointers determine a string that is to be looked
   up in the dictionary
+  
 For lisp the second line must now become
 - parse until the parsepointer sits at a blank or delimiter
 This is a trivial modification, as seen in the source,
 as long as it is easy to revector the parsing word.
 
-#RECURSION
+# RECURSION
 I handle cases of recursion with :F and :R , forward and resolve.
 In fact they can be replaced by a call of RECURSE .
 This is more resilient to reordering.
 
-#TOWARDS A USABLE LISP
+# TOWARDS A USABLE LISP
 As mentioned in the description of the Probst-lisp it
 cannot handle the coins example.
 In files included in the main file I have added:
