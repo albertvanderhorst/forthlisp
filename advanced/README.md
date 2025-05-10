@@ -77,6 +77,8 @@ In files included in the main file I have added:
 - < =
 - or else eval
 
+They are in different files, the first ones are defined in the 
+implementation language Forth, the second ones are in lisp.
 It awaits the expertise of a scheme expert to extend this
 further. I suspect that this lisp with a linear search for
 every function call will remain a toy lisp forever.
