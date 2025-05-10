@@ -27,7 +27,9 @@ actions derived given in a table: `eval` `eq?` `display`.
 The tag determines the offset in the table, where the xt
 resides, then the xt is executed with the `this` pointer on the stack.
 The names of the types are :
+
     nil pair number builtin symbol special compound
+
 
 # DYNAMIC ALLOCATION
 The original has dynamic allocation of strings. Where there is no
